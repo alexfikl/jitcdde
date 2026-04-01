@@ -223,14 +223,13 @@ double get_past_value(
 	unsigned int const index,
 	anchor const v)
 {
-	anchor const w = *(v.next);
-	double const q = w.time-v.time;
+	anchor const * const w = v.next;
+	double const q = w->time-v.time;
 	double const x = (t - v.time)/q;
 	double const a = v.state[index];
 	double const b = v.diff[index] * q;
-	double const c = w.state[index];
-	double const d = w.diff[index] * q;
-	
+	double const c = w->state[index];
+	double const d = w->diff[index] * q;
 	double const C = -3.0*a - 2.0*b + 3.0*c - d;
 	double const D =  2.0*a +      b - 2.0*c + d;
 	return a + x*(b + x*(C + x*D));
@@ -241,13 +240,13 @@ double get_past_diff(
 	unsigned int const index,
 	anchor const v)
 {
-	anchor const w = *(v.next);
-	double const q = w.time-v.time;
+	anchor const * const w = v.next;
+	double const q = w->time-v.time;
 	double const x = (t - v.time)/q;
 	double const a = v.state[index];
 	double const b = v.diff[index] * q;
-	double const c = w.state[index];
-	double const d = w.diff[index] * q;
+	double const c = w->state[index];
+	double const d = w->diff[index] * q;
 	double const C = -3.0*a - 2.0*b + 3.0*c - d;
 	double const D =  2.0*a +      b - 2.0*c + d;
 	return (b + x*(2.0*C + 3.0*D*x)) / q;
@@ -259,12 +258,12 @@ void extrema(
 	double * const minimum,
 	double * const maximum)
 {
-	anchor const w = *(v.next);
-	double const q = w.time-v.time;
+	anchor const * const w = v.next;
+	double const q = w->time-v.time;
 	double const a = v.state[index];
 	double const b = v.diff[index] * q;
-	double const c = w.state[index];
-	double const d = w.diff[index] * q;
+	double const c = w->state[index];
+	double const d = w->diff[index] * q;
 	
 	*minimum = fmin(a,c);
 	*maximum = fmax(a,c);
