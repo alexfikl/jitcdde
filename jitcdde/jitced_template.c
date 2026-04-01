@@ -231,7 +231,9 @@ double get_past_value(
 	double const c = w.state[index];
 	double const d = w.diff[index] * q;
 	
-	return (1-x) * ( (1-x) * (b*x + (a-c)*(2*x+1)) - d*x*x) + c;
+	double const C = -3.0*a - 2.0*b + 3.0*c - d;
+	double const D =  2.0*a +      b - 2.0*c + d;
+	return a + x*(b + x*(C + x*D));
 }
 
 double get_past_diff(
@@ -246,8 +248,9 @@ double get_past_diff(
 	double const b = v.diff[index] * q;
 	double const c = w.state[index];
 	double const d = w.diff[index] * q;
-	
-	return ( (1-x)*(b-x*3*(2*(a-c)+b+d)) + d*x ) /q;
+	double const C = -3.0*a - 2.0*b + 3.0*c - d;
+	double const D =  2.0*a +      b - 2.0*c + d;
+	return (b + x*(2.0*C + 3.0*D*x)) / q;
 }
 
 void extrema(
@@ -266,6 +269,8 @@ void extrema(
 	*minimum = fmin(a,c);
 	*maximum = fmax(a,c);
 	
+	double const C = -3.0*a - 2.0*b + 3.0*c - d;
+	double const D =  2.0*a +      b - 2.0*c + d;
 	double const radicant = b*b + b*d + d*d + 3*(a-c)*(3*(a-c) + 2*(b+d));
 	if (radicant>=0)
 	{
@@ -276,7 +281,7 @@ void extrema(
 			double const x = (B+sign*sqrt(radicant)/3) * A;
 			if (0<x && x<1)
 			{
-				double const value = (1-x) * ( (1-x) * (b*x + (a-c)*(2*x+1)) - d*x*x) + c;
+				double const value = a + x*(b + x*(C + x*D));
 				*minimum = fmin(*minimum,value);
 				*maximum = fmax(*maximum,value);
 			}
@@ -312,8 +317,9 @@ static PyObject * get_recent_state(dde_integrator const * const self, PyObject *
 		double const c = w.state[index];
 		double const d = w.diff[index] * q;
 	
-		* (double *) PyArray_GETPTR1(result, index) = 
-				(1-x) * ( (1-x) * (b*x + (a-c)*(2*x+1)) - d*x*x) + c;
+		double const C = -3.0*a - 2.0*b + 3.0*c - d;
+		double const D =  2.0*a +      b - 2.0*c + d;
+		* (double *) PyArray_GETPTR1(result, index) = a + x*(b + x*(C + x*D));
 	}
 	
 	return (PyObject *) result;
