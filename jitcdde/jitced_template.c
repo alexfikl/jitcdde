@@ -82,6 +82,12 @@ void remove_first_anchor(dde_integrator * const self)
 	else
 		self->last_anchor = NULL;
 	
+	{% if anchor_mem_length: %}
+	for (int i=0; i<{{anchor_mem_length}}; i++)
+		if (self->anchor_mem[i] == old_first_anchor)
+			self->anchor_mem[i] = self->first_anchor;
+	{% endif %}
+	
 	free(old_first_anchor);
 }
 
